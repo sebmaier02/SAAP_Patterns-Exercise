@@ -1,5 +1,5 @@
 import { startServer } from "./Server";
-import { createOrder, updateOrderStatus, startPolling } from "./Client";
+import { createOrder, updateOrderStatus, getOrders } from "./Client";
 
 console.log("=== CLIENT-SERVER ARCHITECTURE (REST) ===\n");
 
@@ -18,10 +18,10 @@ setTimeout(async () => {
   await updateOrderStatus(order1.id, "ready");
   await updateOrderStatus(order2.id, "cancelled");
 
-  // Start kitchen polling (every 2 seconds)
-  console.log("\n[Kitchen] Starting polling every 2s...\n");
-  startPolling(2000, (orders) => {
-    console.log("[Kitchen] Current orders:", orders.map((o) => `#${o.id}:${o.status}`).join(", "));
-  });
-}, 500);
+  // Kitchen must manually fetch to see current state (no push!)
+  console.log("\n[Kitchen] Fetching current orders (manual refresh)...");
+  const orders = await getOrders();
+  console.log("[Kitchen] Current orders:", orders.map((o) => `#${o.id}:${o.status}`).join(", "));
 
+  process.exit(0);
+}, 500);
